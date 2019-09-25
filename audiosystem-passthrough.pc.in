@@ -1,0 +1,4 @@
+Name: audiosystem-passthrough
+Description: Common headers
+Version: [version]
+Cflags: -I[includedir] -DPASSTHROUGH_HELPER_DIR="\"[helperdir]\""
