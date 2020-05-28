@@ -1,6 +1,6 @@
 Name:       audiosystem-passthrough
 Summary:    AudioSystem Passthrough Helper
-Version:    1.0.0
+Version:    1.0.1
 Release:    1
 Group:      System/Daemons
 License:    BSD
@@ -37,12 +37,17 @@ Binder AudioFlinger dummy service.
 %build
 %make_build
 
+# FIXME: remove this workaround when systemd macros are globally enabled
+%if %{undefined _userunitdir}
+%define _userunitdir /usr/lib/systemd/user
+%endif
+
 %install
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} install
-install -D -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/user/audiosystem-passthrough-dummy-af.service
-install -d -m 755 %{buildroot}%{_libdir}/systemd/user/user-session.target.wants
-ln -s ../audiosystem-passthrough-dummy-af.service %{buildroot}%{_libdir}/systemd/user/user-session.target.wants/audiosystem-passthrough-dummy-af.service
+install -D -m 644 %{SOURCE1} %{buildroot}%{_userunitdir}/audiosystem-passthrough-dummy-af.service
+install -d -m 755 %{buildroot}%{_userunitdir}/user-session.target.wants
+ln -s ../audiosystem-passthrough-dummy-af.service %{buildroot}%{_userunitdir}/user-session.target.wants/audiosystem-passthrough-dummy-af.service
 
 %post
 
@@ -62,5 +67,5 @@ ln -s ../audiosystem-passthrough-dummy-af.service %{buildroot}%{_libdir}/systemd
 
 %files dummy-af
 %defattr(-,root,root,-)
-%{_libdir}/systemd/user/audiosystem-passthrough-dummy-af.service
-%{_libdir}/systemd/user/user-session.target.wants/audiosystem-passthrough-dummy-af.service
+%{_userunitdir}/audiosystem-passthrough-dummy-af.service
+%{_userunitdir}/user-session.target.wants/audiosystem-passthrough-dummy-af.service
