@@ -40,6 +40,7 @@
 enum app_type {
     APP_QTI,
     APP_AF,
+    APP_HW2_0,
     APP_MAX
 };
 
@@ -86,6 +87,19 @@ app_qti_wait(
 
 gint
 app_qti_done(
+        void);
+
+gboolean
+app_hw2_0_init(
+        GMainLoop *mainloop,
+        const AppConfig *config);
+
+gboolean
+app_hw2_0_wait(
+        void);
+
+gint
+app_hw2_0_done(
         void);
 
 #endif

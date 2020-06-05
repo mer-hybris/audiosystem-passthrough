@@ -6,6 +6,7 @@ Group:      System/Daemons
 License:    BSD
 Source0:    %{name}-%{version}.tar.bz2
 Source1:    audiosystem-passthrough-dummy-af.service
+Source2:    audiosystem-passthrough-dummy-hw2_0.service
 BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  libtool-ltdl-devel
@@ -17,7 +18,7 @@ BuildRequires:  pkgconfig(gio-2.0)
 Service for communicating with Android binder services.
 
 %package    devel
-Summary:    Binder AudioFlinger or HIDL passthrough helper.
+Summary:    Binder AudioFlinger, HIDL and android.hardware.audio@2.0 passthrough helper.
 Group:      System/Libraries
 
 %description devel
@@ -31,6 +32,14 @@ Requires:   %{name} = %{version}-%{release}
 %description dummy-af
 Binder AudioFlinger dummy service.
 
+%package    dummy-hw2_0
+Summary:    Binder android.hardware.audio@2.0 dummy service.
+Group:      System/Libraries
+Requires:   %{name} = %{version}-%{release}
+
+%description dummy-hw2_0
+Binder android.hardware.audio@2.0 dummy service.
+
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -41,8 +50,10 @@ Binder AudioFlinger dummy service.
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} install
 install -D -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/user/audiosystem-passthrough-dummy-af.service
+install -D -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/user/audiosystem-passthrough-dummy-hw2_0.service
 install -d -m 755 %{buildroot}%{_libdir}/systemd/user/user-session.target.wants
 ln -s ../audiosystem-passthrough-dummy-af.service %{buildroot}%{_libdir}/systemd/user/user-session.target.wants/audiosystem-passthrough-dummy-af.service
+ln -s ../audiosystem-passthrough-dummy-hw2_0.service %{buildroot}%{_libdir}/systemd/user/user-session.target.wants/audiosystem-passthrough-dummy-hw2_0.service
 
 %post
 
@@ -64,3 +75,8 @@ ln -s ../audiosystem-passthrough-dummy-af.service %{buildroot}%{_libdir}/systemd
 %defattr(-,root,root,-)
 %{_libdir}/systemd/user/audiosystem-passthrough-dummy-af.service
 %{_libdir}/systemd/user/user-session.target.wants/audiosystem-passthrough-dummy-af.service
+
+%files dummy-hw2_0
+%defattr(-,root,root,-)
+%{_libdir}/systemd/user/audiosystem-passthrough-dummy-hw2_0.service
+%{_libdir}/systemd/user/user-session.target.wants/audiosystem-passthrough-dummy-hw2_0.service
