@@ -15,6 +15,10 @@ Features and command line arguments
  * qti - IQcRilAudio
    * QCom devices which use vendor.qti.hardware.radio.am@1.0::IQcRilAudioCallback
      hidl service for setting voice call related parameters
+ * hw2_0 - android.hardware.audio@2.0
+   * Devices which use android.hardware.audio@2.0::IDevicesFactory/default and
+     android.hardware.audio@2.0::IDevice services for setting voice call related parameters,
+     but it have only dummy implementation for now
 
 ### Command line arguments
 
@@ -25,7 +29,7 @@ Features and command line arguments
     --module       Run as child process of PulseAudio module
 
     Also passthrough type and idx arguments can be provided from environment variables
-    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,af}
+    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,af,hw2_0}
     AUDIOSYSTEM_PASSTHROUGH_IDX={17,18} # only applicable to af type
 
 How to use audiosystem-passthrough
@@ -38,7 +42,7 @@ configuration for the helper. If autodetection fails you can modify
 PulseAudio sysconfig file (/etc/sysconfig/pulseaudio) and add following
 environment variables:
 
-    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,af}
+    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,af,hw2_0}
     AUDIOSYSTEM_PASSTHROUGH_IDX={17,18} # only applicable to af type
 
 Type qti is for devices which have qti HIDL interface IQcRilAudio.
@@ -49,6 +53,11 @@ Package audiosystem-passthrough-dummy-af contains a service file which starts
 audiosystem-passthrough in AudioFlinger dummy mode.
 This can be used on devices where AudioFlinger service needs to be present
 but isn't used for anything.
+
+Package audiosystem-passthrough-dummy-hw2_0 contain service file which
+starts audiosystem-passthrough in android.hardware.audio@2.0 dummy mode.
+This can be used on devices where android.hardware.audio@2.0 service
+needs to be present but isn't used for anything.
 
 Configuration possibilites matrix
 ---------------------------------

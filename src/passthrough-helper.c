@@ -61,7 +61,8 @@ struct app {
 
 static AppImplementation app_implementations[APP_MAX] = {
     { AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_QTI,     app_qti_init,   app_qti_wait,   app_qti_done   },
-    { AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_AF,      app_af_init,    app_af_wait,    app_af_done     },
+    { AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_AF,      app_af_init,    app_af_wait,    app_af_done    },
+    { AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_HW2_0,   app_hw2_0_init, app_hw2_0_wait, app_hw2_0_done },
 };
 
 
@@ -133,7 +134,7 @@ app_init(
         { "idx", 'i', G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
           &idx, "Starting index for binder calls, only applicable with type " AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_AF ".", NULL },
         { "type", 't', G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
-          &type_str, "Passthrough type. Can be " AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_AF ", " AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_QTI, NULL },
+          &type_str, "Passthrough type. Can be " AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_AF ", " AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_QTI ", " AUDIOSYSTEM_PASSTHROUGH_IMPL_STR_HW2_0, NULL },
         { "module", 'm', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
           &_app_module, "Run as child process.", NULL },
         { "verbose", 'v', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
