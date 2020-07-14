@@ -8,7 +8,8 @@
 
 PKGS = glib-2.0 gio-2.0 libgbinder libglibutil
 
-PREFIX = /usr
+PREFIX ?= /usr
+LIBDIR ?= /usr/lib
 
 EXE = audiosystem-passthrough
 
@@ -86,7 +87,7 @@ endif
 install: $(RELEASE_EXE)
 	mkdir -p $(DESTDIR)$(PREFIX)/libexec/$(EXE)
 	cp $< $(DESTDIR)$(PREFIX)/libexec/$(EXE)/$(EXE)
-	mkdir -p $(DESTDIR)$(PREFIX)/lib/pkgconfig
-	cp $(BUILD_DIR)/$(EXE).pc $(DESTDIR)$(PREFIX)/lib/pkgconfig
+	mkdir -p $(DESTDIR)$(LIBDIR)/pkgconfig
+	cp $(BUILD_DIR)/$(EXE).pc $(DESTDIR)$(LIBDIR)/pkgconfig
 	mkdir -p $(DESTDIR)$(PREFIX)/include/audiosystem-passthrough
 	cp $(SRC_DIR)/common.h $(DESTDIR)$(PREFIX)/include/audiosystem-passthrough

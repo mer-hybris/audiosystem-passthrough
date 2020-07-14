@@ -49,7 +49,7 @@ Binder android.hardware.audio@2.0 dummy service.
 
 %install
 rm -rf %{buildroot}
-make DESTDIR=%{buildroot} PREFIX=%{_prefix} install
+make DESTDIR=%{buildroot} PREFIX=%{_prefix} LIBDIR=%{_libdir} install
 install -D -m 644 %{SOURCE1} %{buildroot}%{_userunitdir}/audiosystem-passthrough-dummy-af.service
 install -D -m 644 %{SOURCE2} %{buildroot}%{_userunitdir}/audiosystem-passthrough-dummy-hw2_0.service
 install -d -m 755 %{buildroot}%{_userunitdir}/user-session.target.wants
