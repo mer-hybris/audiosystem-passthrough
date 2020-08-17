@@ -1,6 +1,8 @@
 [Unit]
 Description=Binder AudioFlinger dummy service
-After=pre-user-session.target
+DefaultDependencies=no
+After=local-fs.target
+Before=droid-hal-init.service
 
 [Service]
 Environment=AUDIOSYSTEM_PASSTHROUGH_TYPE=af
@@ -9,4 +11,4 @@ ExecStart=/usr/libexec/audiosystem-passthrough/audiosystem-passthrough --address
 Restart=always
 
 [Install]
-WantedBy=user-session.target
+WantedBy=multi-user.target
