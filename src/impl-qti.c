@@ -218,6 +218,7 @@ am_client_connect(
         DBG("vendor.qti.qcril.am failed, trying vendor.qti.hardware.radio.am...");
         am->interfaceName = QCRIL_AUDIO_HW_RADIO_1_0;
         am->interfaceCallbackName = QCRIL_AUDIO_HW_RADIO_CALLBACK_1_0;
+        g_free(am->fqname);
         am->fqname = g_strconcat(am->interfaceName, "/", am->slot, NULL);
         am->remote = gbinder_servicemanager_get_service_sync(am->sm,
             am->fqname, &status); /* auto-released reference */
