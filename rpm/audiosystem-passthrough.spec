@@ -13,7 +13,7 @@ BuildRequires:  libtool-ltdl-devel
 BuildRequires:  pkgconfig(libgbinder) >= 1.0.32
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gio-2.0)
-BuildRequires:  systemd
+BuildRequires:  pkgconfig(systemd)
 
 %description
 Service for communicating with Android binder services.
@@ -42,7 +42,7 @@ Requires:   %{name} = %{version}-%{release}
 Binder android.hardware.audio@2.0 dummy service.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 %make_build
