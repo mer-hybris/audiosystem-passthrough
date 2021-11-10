@@ -51,11 +51,10 @@ Binder android.hardware.audio@2.0 dummy service.
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} LIBDIR=%{_libdir} install
 install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/audiosystem-passthrough-dummy-af.service
-install -D -m 644 %{SOURCE2} %{buildroot}%{_userunitdir}/audiosystem-passthrough-dummy-hw2_0.service
+install -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/audiosystem-passthrough-dummy-hw2_0.service
 install -d -m 755 %{buildroot}%{_unitdir}/multi-user.target.wants
-install -d -m 755 %{buildroot}%{_userunitdir}/user-session.target.wants
 ln -s ../audiosystem-passthrough-dummy-af.service %{buildroot}%{_unitdir}/multi-user.target.wants/audiosystem-passthrough-dummy-af.service
-ln -s ../audiosystem-passthrough-dummy-hw2_0.service %{buildroot}%{_userunitdir}/user-session.target.wants/audiosystem-passthrough-dummy-hw2_0.service
+ln -s ../audiosystem-passthrough-dummy-hw2_0.service %{buildroot}%{_unitdir}/multi-user.target.wants/audiosystem-passthrough-dummy-hw2_0.service
 
 %post
 
@@ -80,5 +79,5 @@ ln -s ../audiosystem-passthrough-dummy-hw2_0.service %{buildroot}%{_userunitdir}
 
 %files dummy-hw2_0
 %defattr(-,root,root,-)
-%{_userunitdir}/audiosystem-passthrough-dummy-hw2_0.service
-%{_userunitdir}/user-session.target.wants/audiosystem-passthrough-dummy-hw2_0.service
+%{_unitdir}/audiosystem-passthrough-dummy-hw2_0.service
+%{_unitdir}/multi-user.wants/audiosystem-passthrough-dummy-hw2_0.service
