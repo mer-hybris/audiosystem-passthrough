@@ -17,7 +17,7 @@ SRC = passthrough-helper.c impl-af.c impl-qti.c impl-hw2_0.c dbus-comms.c
 
 all: $(EXE) pkgconfig
 
-PCVERSION = 1.1.0
+PCVERSION = 1.2.0
 
 SRC_DIR = src
 BUILD_DIR = build
