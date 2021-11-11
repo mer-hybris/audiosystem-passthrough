@@ -40,18 +40,28 @@
 #include "logging.h"
 #include "dbus-comms.h"
 
-#define BINDER_DEVICE               GBINDER_DEFAULT_HWBINDER
-#define QCRIL_IFACE_HW_RADIO_1_0(x) "vendor.qti.hardware.radio.am@1.0::" x
+#define BINDER_DEVICE                       GBINDER_DEFAULT_HWBINDER
+#define QCRIL_IFACE_HW_RADIO_1_0(x)         "vendor.qti.hardware.radio.am@1.0::" x
 #define QCRIL_AUDIO_HW_RADIO_1_0             QCRIL_IFACE_HW_RADIO_1_0("IQcRilAudio")
 #define QCRIL_AUDIO_HW_RADIO_CALLBACK_1_0    QCRIL_IFACE_HW_RADIO_1_0("IQcRilAudioCallback")
-#define QCRIL_IFACE_1_0(x)          "vendor.qti.qcril.am@1.0::" x
-#define QCRIL_AUDIO_1_0             QCRIL_IFACE_1_0("IQcRilAudio")
-#define QCRIL_AUDIO_CALLBACK_1_0    QCRIL_IFACE_1_0("IQcRilAudioCallback")
+#define QCRIL_IFACE_1_0(x)                  "vendor.qti.qcril.am@1.0::" x
+#define QCRIL_AUDIO_1_0                     QCRIL_IFACE_1_0("IQcRilAudio")
+#define QCRIL_AUDIO_CALLBACK_1_0            QCRIL_IFACE_1_0("IQcRilAudioCallback")
 
-#define OFONO_RIL_SUBSCRIPTION_CONF "/etc/ofono/ril_subscription.conf"
-#define OFONO_RIL_SUBSCRIPTION_D    "/etc/ofono/ril_subscription.d"
-#define OFONO_RIL_SLOTS_MAX         (4)
+#define OFONO_RIL_SUBSCRIPTION_CONF         "/etc/ofono/ril_subscription.conf"
+#define OFONO_RIL_SUBSCRIPTION_D            "/etc/ofono/ril_subscription.d"
+#define OFONO_RIL_SLOTS_MAX                 (4)
 
+struct qcril_iface_name {
+    const gchar *name;
+    const gchar *callback;
+};
+
+static const struct qcril_iface_name qcril_iface_names[] = {
+    { QCRIL_AUDIO_HW_RADIO_1_0,     QCRIL_AUDIO_HW_RADIO_CALLBACK_1_0   },
+    { QCRIL_AUDIO_1_0,              QCRIL_AUDIO_CALLBACK_1_0            },
+    { NULL, NULL }
+};
 
 enum qcril_audio_methods {
     QCRIL_AUDIO_SET_CALLBACK = GBINDER_FIRST_CALL_TRANSACTION,
@@ -69,8 +79,8 @@ typedef struct am_client {
     HidlApp *app;
     char* fqname;
     gchar* slot;
-    gchar* interfaceName;
-    gchar* interfaceCallbackName;
+    const gchar *interface_name;
+    const gchar *callback_name;
     GBinderServiceManager* sm;
     GBinderLocalObject* local;
     GBinderRemoteObject* remote;
@@ -175,7 +185,7 @@ am_client_callback(
     AmClient* am = user_data;
     const char* iface = gbinder_remote_request_interface(req);
 
-    if (!g_strcmp0(iface, am->interfaceCallbackName)) {
+    if (!g_strcmp0(iface, am->callback_name)) {
         GBinderReader reader;
         GBinderLocalReply* reply = gbinder_local_object_new_reply(obj);
         const char* str;
@@ -208,31 +218,39 @@ static gboolean
 am_client_connect(
         AmClient* am)
 {
-    am->interfaceName = QCRIL_AUDIO_1_0;
-    am->interfaceCallbackName = QCRIL_AUDIO_CALLBACK_1_0;
     int status = 0;
-    am->fqname = g_strconcat(am->interfaceName, "/", am->slot, NULL);
-    am->remote = gbinder_servicemanager_get_service_sync(am->sm,
-        am->fqname, &status); /* auto-released reference */
-    if (!am->remote) {
-        DBG("vendor.qti.qcril.am failed, trying vendor.qti.hardware.radio.am...");
-        am->interfaceName = QCRIL_AUDIO_HW_RADIO_1_0;
-        am->interfaceCallbackName = QCRIL_AUDIO_HW_RADIO_CALLBACK_1_0;
-        g_free(am->fqname);
-        am->fqname = g_strconcat(am->interfaceName, "/", am->slot, NULL);
+    int i;
+
+    for (i = 0; qcril_iface_names[i].name; i++) {
+        const gchar *interface_name = qcril_iface_names[i].name;
+        const gchar *callback_name = qcril_iface_names[i].callback;
+        gchar *fqname;
+
+        fqname = g_strconcat(interface_name, "/", am->slot, NULL);
         am->remote = gbinder_servicemanager_get_service_sync(am->sm,
-            am->fqname, &status); /* auto-released reference */
+            fqname, &status); /* auto-released reference */
+        if (am->remote) {
+            am->fqname = fqname;
+            am->interface_name = interface_name;
+            am->callback_name = callback_name;
+            break;
+        } else {
+            DBG("Couldn't connect to %s, trying next...", interface_name);
+            g_free(fqname);
+            continue;
+        }
     }
+
     if (am->remote) {
         GBinderLocalRequest* req;
 
         DBG("Connected to %s", am->fqname);
         gbinder_remote_object_ref(am->remote);
-        am->client = gbinder_client_new(am->remote, am->interfaceName);
+        am->client = gbinder_client_new(am->remote, am->interface_name);
         am->death_id = gbinder_remote_object_add_death_handler(am->remote,
             am_remote_died, am);
         am->local = gbinder_servicemanager_new_local_object(am->sm,
-            am->interfaceCallbackName, am_client_callback, am);
+            am->callback_name, am_client_callback, am);
 
         /* oneway IQcRilAudio::setCallback(IQcRilAudioCallback) */
         req = gbinder_client_new_request(am->client);
@@ -243,7 +261,15 @@ am_client_connect(
         DBG("setCallback %s status %d", am->slot, status);
         return TRUE;
     }
-    DBG("no interfaces could be configured!");
+
+    ERR("No interfaces could be configured!");
+
+    am->interface_name = qcril_iface_names[0].name;
+    am->callback_name = qcril_iface_names[0].callback;
+    am->fqname = g_strconcat(am->interface_name, "/", am->slot, NULL);
+
+    ERR("TODO defaulting to wait for %s, if this is not desired please update implementation.", am->fqname);
+
     return FALSE;
 }
 
