@@ -80,4 +80,4 @@ ln -s ../audiosystem-passthrough-dummy-hw2_0.service %{buildroot}%{_unitdir}/mul
 %files dummy-hw2_0
 %defattr(-,root,root,-)
 %{_unitdir}/audiosystem-passthrough-dummy-hw2_0.service
-%{_unitdir}/multi-user.wants/audiosystem-passthrough-dummy-hw2_0.service
+%{_unitdir}/multi-user.target.wants/audiosystem-passthrough-dummy-hw2_0.service
