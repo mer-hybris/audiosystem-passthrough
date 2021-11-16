@@ -2,7 +2,6 @@
 Description=Binder android.hardware.audio@2.0 dummy service
 After=droid-hal-init.service
 Before=ofono.service
-Conflicts=bluebinder.service
 
 [Service]
 Environment=AUDIOSYSTEM_PASSTHROUGH_TYPE=hw2_0
