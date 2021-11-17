@@ -13,12 +13,13 @@ Features and command line arguments
    * Normal mode
    * Dummy mode - exposes the service but only replies OK to all method calls)
  * qti - IQcRilAudio
-   * QCom devices which use vendor.qti.hardware.radio.am@1.0::IQcRilAudioCallback
-     hidl service for setting voice call related parameters
+   * Devices which use vendor.qti.hardware.radio.am@1.0::IQcRilAudioCallback
+     or vendor.qti.qcril.am@1.0::IQcRilAudioCallback hidl service for
+     setting voice call related parameters.
  * hw2_0 - android.hardware.audio@2.0
    * Devices which use android.hardware.audio@2.0::IDevicesFactory/default and
-     android.hardware.audio@2.0::IDevice services for setting voice call related parameters,
-     but it have only dummy implementation for now
+     android.hardware.audio@2.0::IDevice services for setting voice call
+     related parameters. Right now hw2_0 has only dummy implementation.
 
 ### Command line arguments
 
@@ -54,7 +55,7 @@ audiosystem-passthrough in AudioFlinger dummy mode.
 This can be used on devices where AudioFlinger service needs to be present
 but isn't used for anything.
 
-Package audiosystem-passthrough-dummy-hw2_0 contain service file which
+Package audiosystem-passthrough-dummy-hw2_0 contains a service file which
 starts audiosystem-passthrough in android.hardware.audio@2.0 dummy mode.
 This can be used on devices where android.hardware.audio@2.0 service
 needs to be present but isn't used for anything.
