@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Jolla Ltd.
+ * Copyright (C) 2019-2022 Jolla Ltd.
  *
  * Contact: Juho Hämäläinen <juho.hamalainen@jolla.com>
  *
@@ -125,10 +125,13 @@ app_init(
     GError* error = NULL;
     gchar *type_str = NULL;
     gchar *address_str = NULL;
+    gchar *device_str = NULL;
     gint idx = -1;
     GOptionContext* options = NULL;
 
     GOptionEntry entries[] = {
+        { "device", 'd', G_OPTION_ARG_NONE, G_OPTION_ARG_STRING,
+          &device_str, "Binder device node." },
         { "address", 'a', G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
           &address_str, "DBus address for PulseAudio module interface.", NULL },
         { "idx", 'i', G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
@@ -189,6 +192,11 @@ app_init(
         app->config.dummy_mode = TRUE;
     }
 
+    if (device_str) {
+        app->config.device = device_str;
+        device_str = NULL;
+    }
+
     app->loop = g_main_loop_new(NULL, TRUE);
     if (!app_implementations[app->type].init(app->loop, &app->config))
         goto fail;
@@ -202,6 +210,7 @@ app_init(
 fail:
     g_free(address_str);
     g_free(type_str);
+    g_free(device_str);
 
     if (options)
         g_option_context_free(options);
@@ -224,6 +233,7 @@ app_deinit(
     if (app->type >= 0 && app->ret == RET_OK)
         app->ret = app_implementations[app->type].done();
     g_free(app->config.address);
+    g_free(app->config.device);
 }
 
 int main(int argc, char* argv[])

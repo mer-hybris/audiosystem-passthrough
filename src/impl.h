@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Jolla Ltd.
+ * Copyright (C) 2019-2022 Jolla Ltd.
  *
  * Contact: Juho Hämäläinen <juho.hamalainen@jolla.com>
  *
@@ -46,6 +46,7 @@ enum app_type {
 
 typedef struct app_config {
     gchar *address;
+    gchar *device;
     gboolean dummy_mode;
     gboolean verbose;
     gint binder_index;
