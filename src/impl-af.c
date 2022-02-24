@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Jolla Ltd.
+ * Copyright (C) 2019-2022 Jolla Ltd.
  *
  * Contact: Juho Hämäläinen <juho.hamalainen@jolla.com>
  *
@@ -165,7 +165,7 @@ sm_presence_handler(
     AfApp* app = user_data;
 
     if (gbinder_servicemanager_is_present(app->sm)) {
-        DBG("Service manager has reappeared.");
+        DBG("Service manager has appeared.");
         gbinder_servicemanager_add_service(app->sm, SERVICE_NAME, app->local,
                                            app_add_service_done, app);
     } else {
@@ -193,10 +193,12 @@ app_af_init(
         GMainLoop *mainloop,
         const AppConfig *config)
 {
+    const gchar *device = config->device ? config->device : BINDER_DEVICE;
+
     memset(&_app, 0, sizeof(_app));
     _app.loop = mainloop;
     _app.config = config;
-    _app.sm = gbinder_servicemanager_new(BINDER_DEVICE);
+    _app.sm = gbinder_servicemanager_new(device);
     _app.local = gbinder_servicemanager_new_local_object(_app.sm,
                                                          SERVICE_IFACE,
                                                          app_reply,
