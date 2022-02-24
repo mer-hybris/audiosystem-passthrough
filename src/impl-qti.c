@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Jolla Ltd.
+ * Copyright (C) 2019-2022 Jolla Ltd.
  *
  * Contact: Juho Hämäläinen <juho.hamalainen@jolla.com>
  *
@@ -450,7 +450,7 @@ app_qti_init(
     _app.loop = mainloop;
     _app.config = config;
 
-    _app.sm = gbinder_servicemanager_new(BINDER_DEVICE);
+    _app.sm = gbinder_servicemanager_new(config->device ? config->device : BINDER_DEVICE);
     if (!app_parse_all_slots(&_app))
         return FALSE;
 
