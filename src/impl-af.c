@@ -34,6 +34,7 @@
 
 #include <gbinder.h>
 #include <glib-unix.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "impl.h"
@@ -196,6 +197,14 @@ app_af_init(
     const gchar *device = config->device ? config->device : BINDER_DEVICE;
 
     memset(&_app, 0, sizeof(_app));
+
+    if (!g_file_test(device, G_FILE_TEST_EXISTS)) {
+        int times = 60;
+        DBG("Device node %s doesn't exist, let's wait for it for a while...", device);
+        while (!g_file_test(device, G_FILE_TEST_EXISTS) && times--)
+            usleep(500000); /* 0.5 seconds */
+    }
+
     _app.loop = mainloop;
     _app.config = config;
     _app.sm = gbinder_servicemanager_new(device);
