@@ -1,6 +1,6 @@
 Name:       audiosystem-passthrough
 Summary:    AudioSystem Passthrough Helper
-Version:    1.2.1
+Version:    1.3.0
 Release:    1
 Group:      System/Daemons
 License:    BSD
